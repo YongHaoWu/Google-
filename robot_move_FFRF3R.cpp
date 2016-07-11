@@ -3,6 +3,7 @@
 /* follow2：在指令里面会出现2（FFR）这种情况，就是FFRFFR。 */
 
 #include <iostream>
+#include <stack>
 using namespace std;
 struct position{
     int x;
@@ -65,17 +66,25 @@ int main()
     position robot_position;
     int num = 1, cnt = 0;
     bool has_nested = false;
+    stack<char> operator_stack;
     for(int i=0; str[i]; ++i) {
         switch(str[i]) {
             case '(':
+                operator_stack.push(num+'0');
                 has_nested = true;
                 cnt = 0;
                 break;
             case ')':
+                if(!operator_stack.empty() && num==operator_stack.top()-'0' && has_nested==true)
+                    operator_stack.pop();
                 if(num != 1) {
                     num--;
                     i = i-cnt-1;
                 }else {
+                    if(!operator_stack.empty()) {
+                        num = operator_stack.top()-'0';
+                        operator_stack.pop();
+                    }
                     has_nested = false;
                 }
                 break;
